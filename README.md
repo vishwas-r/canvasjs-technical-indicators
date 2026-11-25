@@ -28,7 +28,7 @@ Try the [playground](examples/playground.html) (toggle indicators on a live Stoc
 
 ## Install
 
-This repository does not include CanvasJS. Get it from [canvasjs.com](https://canvasjs.com) and check its license terms. The StockChart build includes the regular charts too.
+This repository does not include CanvasJS. CanvasJS is a separate library with its own licensing terms—please review the [CanvasJS License](https://canvasjs.com/license/) before using it in your projects. The StockChart build includes regular charts as well.
 
 ```html
 <script src="https://cdn.canvasjs.com/canvasjs.stock.min.js"></script>
@@ -150,8 +150,10 @@ Incremental (last-bar) updates for very large datasets, ADX, CCI, Williams %R, M
 ## Notes
 
 - Indicators are calculated from the data you give the chart. Nothing here is financial advice.
-- CanvasJS is a separate product with its own license; this project is not part of it and does not bundle it.
+- CanvasJS is a separate product and is not bundled with this plugin.
 
 ## License
 
-[MIT](LICENSE)
+This plugin is licensed under the [MIT License](LICENSE).
+
+Please note that **CanvasJS** itself is a separate proprietary charting library and is not covered by this MIT license. Refer to the [CanvasJS License Page](https://canvasjs.com/license/) for details regarding CanvasJS commercial or non-commercial usage.
