@@ -1,0 +1,17 @@
+{
+  "name": "canvasjs-technical-indicators",
+  "version": "1.0.0",
+  "description": "Technical indicators (SMA, EMA, Bollinger Bands, VWAP, RSI, MACD, Stochastic, ATR, OBV) for CanvasJS Chart and StockChart. Plain ES5, one file per indicator.",
+  "browser": "dist/technical-indicators.min.js",
+  "files": ["dist", "src"],
+  "scripts": {
+    "build": "node scripts/build.js",
+    "test": "node test/run-tests.js && node test/run-tests.js --dist && node test/run-tests.js --min"
+  },
+  "keywords": ["canvasjs", "stockchart", "technical-indicators", "rsi", "macd", "bollinger-bands", "candlestick", "charts", "javascript"],
+  "repository": { "type": "git", "url": "git+https://github.com/vishwas-r/canvasjs-technical-indicators.git" },
+  "bugs": { "url": "https://github.com/vishwas-r/canvasjs-technical-indicators/issues" },
+  "homepage": "https://github.com/vishwas-r/canvasjs-technical-indicators#readme",
+  "license": "MIT",
+  "devDependencies": { "esbuild": "^0.25.0" }
+}

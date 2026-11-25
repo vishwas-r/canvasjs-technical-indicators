@@ -1,0 +1,91 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Technical indicators on a StockChart</title>
+<script type="text/javascript" src="https://cdn.canvasjs.com/canvasjs.stock.min.js"></script>
+<script type="text/javascript" src="../src/technical-indicators-core.js"></script>
+<script type="text/javascript" src="../src/indicators/simple-moving-average.js"></script>
+<script type="text/javascript" src="../src/indicators/exponential-moving-average.js"></script>
+<script type="text/javascript" src="../src/indicators/bollinger-bands.js"></script>
+<script type="text/javascript" src="../src/indicators/volume-weighted-average-price.js"></script>
+<script type="text/javascript" src="../src/indicators/relative-strength-index.js"></script>
+<script type="text/javascript" src="../src/indicators/moving-average-convergence-divergence.js"></script>
+<script type="text/javascript" src="../src/indicators/stochastic-oscillator.js"></script>
+<script type="text/javascript" src="../src/indicators/average-true-range.js"></script>
+<script type="text/javascript" src="../src/indicators/on-balance-volume.js"></script>
+<script type="text/javascript">
+var seed = 12345;
+
+function nextRandomNumber() {
+  seed = (seed * 1664525 + 1013904223) % 4294967296;
+  return seed / 4294967296;
+}
+
+window.onload = function() {
+  var priceDataPoints = [];
+  var volumeDataPoints = [];
+  var navigatorDataPoints = [];
+  var closePrice = 180;
+  var currentDate = new Date(2026, 0, 5);
+
+  for(var i = 0; i < 160; i++) {
+    var openPrice = closePrice;
+    var volume = Math.round(2000000 + nextRandomNumber() * 4000000);
+    var candleColor = "";
+
+    closePrice = openPrice * (1 + (nextRandomNumber() - 0.48) * 0.03);
+    candleColor = closePrice >= openPrice ? "#26A69A" : "#EF5350";
+    priceDataPoints.push({ x: new Date(currentDate.getTime()), y: [openPrice, Math.max(openPrice, closePrice) * 1.006, Math.min(openPrice, closePrice) * 0.994, closePrice], color: candleColor });
+    volumeDataPoints.push({ x: new Date(currentDate.getTime()), y: volume, color: candleColor });
+    navigatorDataPoints.push({ x: new Date(currentDate.getTime()), y: closePrice });
+    currentDate.setDate(currentDate.getDate() + 1);
+  }
+
+  var stockChart = new CanvasJS.StockChart("chartContainer", {
+    theme: "light2",
+    title: { text: "StockChart with technical indicators", fontSize: 20 },
+    charts: [{
+      toolTip: { shared: true },
+      axisX: { crosshair: { enabled: true, snapToDataPoint: true } },
+      axisY: { prefix: "$" },
+      data: [{ type: "candlestick", name: "Price", dataPoints: priceDataPoints }]
+    }, {
+      height: 90,
+      axisX: { crosshair: { enabled: true, snapToDataPoint: true } },
+      data: [{ type: "column", name: "Volume", dataPoints: volumeDataPoints }]
+    }],
+    navigator: { data: [{ dataPoints: navigatorDataPoints }] },
+    indicators: [
+      { type: "sma", period: 20 },
+      { type: "bollinger", period: 20, standardDeviations: 2, color: "#8E24AA" },
+      { type: "vwap", reset: "none", volumeChartIndex: 1, volumeSeriesIndex: 0, color: "#00897B" },
+      { type: "rsi", period: 14 },
+      { type: "macd", fast: 12, slow: 26, signal: 9 },
+      { type: "stochastic", period: 14, smoothing: 3, signalPeriod: 3 },
+      { type: "atr", period: 14 },
+      { type: "obv", volumeChartIndex: 1, volumeSeriesIndex: 0 }
+    ]
+  });
+
+  stockChart.render();
+
+  // Call once the data is in the options: adds the indicator series and panes, then renders again
+  var indicatorSet = TechnicalIndicators.apply(stockChart);
+
+  // Realtime: change the last candle, then ask the indicators to recalculate
+  setInterval(function() {
+    var lastDataPoint = priceDataPoints[priceDataPoints.length - 1];
+    var newClosePrice = lastDataPoint.y[3] * (1 + (nextRandomNumber() - 0.5) * 0.004);
+
+    lastDataPoint.y = [lastDataPoint.y[0], Math.max(lastDataPoint.y[1], newClosePrice), Math.min(lastDataPoint.y[2], newClosePrice), newClosePrice];
+    lastDataPoint.color = newClosePrice >= lastDataPoint.y[0] ? "#26A69A" : "#EF5350";
+    indicatorSet.update();
+  }, 2000);
+};
+</script>
+</head>
+<body>
+<div id="chartContainer" style="height: 1100px; width: 100%;"></div>
+</body>
+</html>

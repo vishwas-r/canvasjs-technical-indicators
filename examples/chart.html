@@ -1,0 +1,67 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Technical indicators on a Chart</title>
+<script type="text/javascript" src="https://cdn.canvasjs.com/canvasjs.stock.min.js"></script>
+<script type="text/javascript" src="../src/technical-indicators-core.js"></script>
+<script type="text/javascript" src="../src/indicators/simple-moving-average.js"></script>
+<script type="text/javascript" src="../src/indicators/exponential-moving-average.js"></script>
+<script type="text/javascript" src="../src/indicators/bollinger-bands.js"></script>
+<script type="text/javascript" src="../src/indicators/relative-strength-index.js"></script>
+<script type="text/javascript">
+function createSampleCandles(candleCount) {
+  var candles = [];
+  var closePrice = 180;
+  var seed = 12345;
+  var currentDate = new Date(2026, 0, 5);
+
+  function nextRandomNumber() {
+    seed = (seed * 1664525 + 1013904223) % 4294967296;
+    return seed / 4294967296;
+  }
+
+  for(var i = 0; i < candleCount; i++) {
+    var openPrice = closePrice;
+    closePrice = openPrice * (1 + (nextRandomNumber() - 0.48) * 0.03);
+    candles.push({
+      x: new Date(currentDate.getTime()),
+      y: [openPrice, Math.max(openPrice, closePrice) * 1.006, Math.min(openPrice, closePrice) * 0.994, closePrice],
+      color: closePrice >= openPrice ? "#26A69A" : "#EF5350"
+    });
+    currentDate.setDate(currentDate.getDate() + 1);
+  }
+
+  return candles;
+}
+
+window.onload = function() {
+  // Optional: lets "indicators" work on every render() without calling apply()
+  TechnicalIndicators.enable();
+
+  var chart = new CanvasJS.Chart("chartContainer", {
+    theme: "light2",
+    title: { text: "Candlestick Chart with overlay indicators", fontSize: 20 },
+    axisY: { prefix: "$" },
+    data: [{
+      type: "candlestick",
+      name: "Price",
+      dataPoints: createSampleCandles(120)
+    }],
+    indicators: [
+      { type: "sma", period: 20 },
+      { type: "ema", period: 50, color: "#FF6D00" },
+      { type: "bollinger", period: 20, standardDeviations: 2, color: "#8E24AA" },
+      // Needs its own chart, so a plain Chart ignores it and logs a console warning
+      { type: "rsi", period: 14 }
+    ]
+  });
+
+  chart.render();
+};
+</script>
+</head>
+<body>
+<div id="chartContainer" style="height: 480px; width: 100%;"></div>
+</body>
+</html>
